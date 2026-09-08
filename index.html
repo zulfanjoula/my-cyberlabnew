@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zulfan Jaula | Cybersecurity Student Portfolio</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 17 10 11 4 5'%3E%3C/polyline%3E%3Cline x1='12' y1='19' x2='20' y2='19'%3E%3C/line%3E%3C/svg%3E" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              bg: '#070a09',
+              surface: '#0d1310',
+              'surface-light': '#121c17',
+              border: 'rgba(16, 185, 129, 0.16)',
+              green: '#10b981',
+              neon: '#00ff66',
+              text: '#e2e8f0',
+              muted: '#8e9e96'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          },
+          boxShadow: {
+            'glow-sm': '0 0 12px rgba(16, 185, 129, 0.2)',
+            'glow-md': '0 0 24px rgba(16, 185, 129, 0.3)',
+            'glow-neon': '0 0 16px rgba(0, 255, 102, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React 18 & Babel Standalone -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      background-color: #070a09;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    .cyber-grid {
+      background-size: 36px 36px;
+      background-image: 
+        linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px);
+    }
+    .cyber-radial-glow {
+      background: radial-gradient(ellipse at 50% 10%, rgba(0, 255, 102, 0.07) 0%, rgba(7, 10, 9, 0) 65%);
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 15px;
+      background-color: #00ff66;
+      margin-left: 4px;
+      vertical-align: middle;
+      animation: blink 1s step-start infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090e0c;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #192722;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-[#070a09] text-[#e2e8f0] font-sans antialiased selection:bg-emerald-500/20 selection:text-emerald-300">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- REAL DATA FOR ZULFAN JAULA ---
+    const profileData = {
+      name: "Zulfan Jaula",
+      role: "Cybersecurity Student",
+      systemStatus: '> system.status = "learning"',
+      currentlyLearning: "Cybersecurity & Networking",
+      supportingHeadline: "Learning cybersecurity, networking, web security, and ethical hacking — one lab at a time.",
+      brandingParagraph: "I am a cybersecurity student building foundational knowledge through hands-on labs, CTF challenges, networking practice, Linux, and security tools.",
+      aboutIntro: "I am a motivated cybersecurity student dedicated to understanding how systems operate, communicate, and stay secure. Rather than focusing on superficial shortcuts, I invest my time in learning core computer networking, navigating Linux command-line environments, analyzing protocols, and testing web applications inside safe virtual labs. I document my ongoing work here to reflect real progress and hands-on skill development.",
+      aboutTerminal: [
+        "Curious.",
+        "Learning.",
+        "Practicing.",
+        "Building.",
+        "Improving."
+      ],
+      goalsTerminal: [
+        "Learn cybersecurity",
+        "Strengthen networking fundamentals",
+        "Improve Linux skills",
+        "Practice web security",
+        "Complete CTF challenges",
+        "Build practical projects",
+        "Keep learning"
+      ],
+      philosophyTitle: "Always Learning. Always Building.",
+      philosophyText: "Cybersecurity is a continuous learning process. This portfolio documents the skills, labs, certificates, projects, and lessons I collect along the way.",
+      contactIntro: "Open to connecting with people interested in cybersecurity, technology, networking, and continuous learning.",
+      socials: {
+        github: "https://github.com/zulfanjoula",
+        linkedin: "https://www.linkedin.com/in/zulfan-joula-62b16a386/",
+        email: "zulfanjoula@gmail.com"
+      }
+    };
+
+    const skillsData = [
+      { id: 'linux', name: 'Linux', description: 'Fundamental Linux command-line usage and system exploration.', level: 'FOUNDATION', focus: 'Bash CLI, permissions, SUID, process inspection' },
+      { id: 'networking', name: 'Networking', description: 'Learning networking fundamentals, protocols, addressing, and troubleshooting.', level: 'FOUNDATION', focus: 'TCP/IP, OSI model, IPv4/IPv6 subnetting, DNS, routing' },
+      { id: 'nmap', name: 'Nmap', description: 'Learning network discovery and basic service enumeration.', level: 'LEARNING', focus: 'SYN scans, service banner grabbing, NSE scripts' },
+      { id: 'wireshark', name: 'Wireshark', description: 'Learning packet capture and basic network traffic analysis.', level: 'LEARNING', focus: 'PCAP dissection, display filters, TCP stream tracking' },
+      { id: 'burp-suite', name: 'Burp Suite', description: 'Learning HTTP inspection and basic web security testing.', level: 'LEARNING', focus: 'Proxy interception, Repeater, HTTP header inspection' },
+      { id: 'web-security', name: 'Web Security', description: 'Exploring fundamental web security concepts and vulnerabilities.', level: 'LEARNING', focus: 'OWASP Top 10 concepts, authentication, input validation' },
+      { id: 'ctf', name: 'CTF', description: 'Practicing cybersecurity problem solving through Capture The Flag challenges.', level: 'PRACTICING', focus: 'TryHackMe, OverTheWire, beginner CTF rooms' },
+      { id: 'python', name: 'Python', description: 'Basic Python programming for learning and cybersecurity-related automation.', level: 'BASIC', focus: 'Scripting basics, socket basics, file parsing' }
+    ];
+
+    const projectsData = [
+      {
+        id: 'network-recon-lab',
+        name: 'Network Recon Lab',
+        category: 'NETWORKING',
+        description: 'A learning project focused on network discovery and basic service enumeration using Nmap.',
+        tools: ['Nmap', 'Linux'],
+        status: 'PRACTICE',
+        objectives: [
+          'Understand host discovery techniques across private subnets',
+          'Compare TCP SYN scan (-sS) and TCP Connect scan (-sT) mechanics',
+          'Perform service banner grabbing (-sV) and OS fingerprinting (-O) in a private virtual network',
+          'Document scan outputs and identify standard open service ports'
+        ],
+        keyTakeaways: [
+          'Learned why non-destructive scanning flags and rate limits matter in lab testing',
+          'Practiced interpreting raw Nmap XML and greppable output formats',
+          'Gained confidence matching service versions against known CVE databases for educational analysis'
+        ],
+        commandsPracticed: [
+          'nmap -sn 192.168.1.0/24',
+          'nmap -sS -sV -p 1-1000 -T4 target.lab',
+          'nmap -sC -sV -oN scan_results.txt target.lab'
+        ],
+        labNotes: 'Conducted in an isolated local VirtualBox host-only test network. Used solely for educational understanding of network mapping fundamentals.'
+      },
+      {
+        id: 'packet-analysis-lab',
+        name: 'Packet Analysis Lab',
+        category: 'NETWORK ANALYSIS',
+        description: 'A learning project focused on understanding captured network traffic and identifying basic protocols using Wireshark.',
+        tools: ['Wireshark', 'Networking'],
+        status: 'LEARNING',
+        objectives: [
+          'Analyze the three-way TCP handshake (SYN, SYN-ACK, ACK) and connection teardown',
+          'Inspect cleartext DNS and HTTP traffic to observe header and query payloads',
+          'Apply Wireshark display filters to isolate suspicious connection spikes or unencrypted credentials',
+          'Follow TCP streams to reconstruct full application-layer conversations'
+        ],
+        keyTakeaways: [
+          'Understood how unencrypted HTTP protocols expose user session tokens and credentials in transit',
+          'Became familiar with display filter syntax such as http.request.method == "POST"',
+          'Appreciated why TLS/HTTPS encryption is essential for data confidentiality'
+        ],
+        commandsPracticed: [
+          'ip.addr == 192.168.1.50 && tcp.port == 80',
+          'tcp.flags.reset == 1',
+          'dns.flags.response == 0'
+        ],
+        labNotes: 'Analyzed educational PCAP samples from Wireshark sample captures and local lab sessions.'
+      },
+      {
+        id: 'web-security-lab',
+        name: 'Web Security Lab',
+        category: 'WEB SECURITY',
+        description: 'A practice environment for learning HTTP requests, responses, web security concepts, and basic testing using Burp Suite.',
+        tools: ['Burp Suite', 'Web Security'],
+        status: 'LEARNING',
+        objectives: [
+          'Configure browser proxy settings and install PortSwigger CA certificates for HTTPS interception',
+          'Inspect and manipulate GET and POST parameters in real time using Burp Repeater',
+          'Study basic input validation flaws (simple SQL injection, Reflected XSS) in intentionally vulnerable practice labs',
+          'Analyze server response headers, cookies, and session tokens'
+        ],
+        keyTakeaways: [
+          'Observed how client-side form validations can be bypassed by intercepting raw HTTP requests',
+          'Learned the importance of server-side parameterized queries in mitigating injection attacks',
+          'Understood the difference between authentication, session handling, and authorization'
+        ],
+        commandsPracticed: [
+          'Burp Proxy intercept & forward',
+          'Burp Repeater manual request crafting',
+          'Cookie flag inspection (Secure, HttpOnly, SameSite)'
+        ],
+        labNotes: 'Tested exclusively against dedicated educational platforms: PortSwigger Web Security Academy and locally hosted OWASP Juice Shop.'
+      },
+      {
+        id: 'ctf-practice',
+        name: 'CTF Practice',
+        category: 'CTF',
+        description: 'Hands-on cybersecurity challenges focused on enumeration, Linux, web security, and problem solving.',
+        tools: ['Linux', 'Nmap', 'Web Security'],
+        status: 'PRACTICE',
+        objectives: [
+          'Practice structured reconnaissance on beginner-friendly lab machines',
+          'Inspect hidden source comments, robots.txt, and basic web directories',
+          'Navigate Linux privileges, file permissions, and discover misconfigurations in simulated testbeds',
+          'Document step-by-step write-ups to reinforce learning methodology'
+        ],
+        keyTakeaways: [
+          'Developed disciplined note-taking habits during lab engagement',
+          'Learned that enumeration and patience account for 80% of solving CTF challenges',
+          'Reinforced Linux privilege concepts like SUID binaries, cronjobs, and file permission masking'
+        ],
+        commandsPracticed: [
+          'find / -perm -u=s -type f 2>/dev/null',
+          'gobuster dir -u http://target.lab -w common.txt',
+          'grep -rn "password" /var/log/ 2>/dev/null'
+        ],
+        labNotes: 'Completed beginner learning paths and exercises on legal, consented platforms.'
+      }
+    ];
+
+    // --- 7 REAL CERTIFICATES OF ZULFAN JAULA ---
+    const certificatesData = [
+      {
+        id: 'cert-hackviser-core',
+        title: 'Certified Cybersecurity Foundations (CORE)',
+        issuer: 'Hackviser',
+        date: 'September 6, 2026',
+        category: 'Cybersecurity',
+        shortDescription: 'Core cybersecurity certification validating practical security exercises and foundational defense competence.',
+        fullDescription: 'Earned the Certified Cybersecurity Foundations (CORE) certification by completing training modules and practical security exercises under Hackviser. The coursework demonstrates foundational competence in identifying threat landscapes, applying core security principles, and defending critical information assets.',
+        skillsCovered: ['Foundational Security', 'Threat Analysis', 'Practical Security Exercises', 'Core Defensive Principles'],
+        image: 'public/images/certificates/cybersecurity (1).png',
+        credentialUrl: 'https://hackviser.com/verify?id=HV-CORE-VAO0ONU0'
+      },
+      {
+        id: 'cert-cisco-intro',
+        title: 'Introduction to Cybersecurity',
+        issuer: 'Cisco Networking Academy',
+        date: '21 Jan 2026',
+        category: 'Cybersecurity',
+        shortDescription: 'Foundational digital security, network defense mechanisms, data confidentiality, and threat mitigation.',
+        fullDescription: 'Awarded for successfully completing the Introduction to Cybersecurity program offered by Networking Academy through Cisco Networking Academy. Covered essential digital security concepts, network vulnerabilities, data privacy, defense-in-depth methodologies, and protective measures for modern network infrastructures.',
+        skillsCovered: ['Cisco Security Concepts', 'Network Vulnerabilities', 'Confidentiality & Integrity', 'Cyber Defense Best Practices'],
+        image: 'public/images/certificates/networking.png',
+        credentialUrl: 'https://www.netacad.com'
+      },
+      {
+        id: 'cert-cybrary-linux',
+        title: 'Linux CLI Basics',
+        issuer: 'Cybrary',
+        date: 'Jan 22, 2026',
+        category: 'Linux',
+        shortDescription: 'Linux command-line navigation, file permissions, shell environment, and basic system administration.',
+        fullDescription: 'Successfully completed the CEU/CPE training course provided by Cybrary in Linux CLI Basics. Focused on core command-line navigation, file hierarchy exploration, user permission structures (chmod, chown), process monitoring, and pipeline utilities that form the operational backbone of security analysis.',
+        skillsCovered: ['Linux CLI', 'Bash Navigation', 'File Permissions', 'Process Control', 'Pipes & Redirection'],
+        image: 'public/images/certificates/linux.png',
+        credentialUrl: 'https://app.cybrary.it'
+      },
+      {
+        id: 'cert-fortinet-getting-started',
+        title: 'Getting Started in Cybersecurity 3.0',
+        issuer: 'Fortinet Training Institute',
+        date: 'Jan 23, 2026',
+        category: 'Cybersecurity',
+        shortDescription: 'Enterprise threat vectors, network security architectures, and Fortinet Security Fabric paradigms.',
+        fullDescription: 'Completed training through the Fortinet Training Institute exploring the evolution of the threat landscape, common attack surfaces, modern network security paradigms, and enterprise defense frameworks. Gained solid perspective on how security architectures safeguard distributed networks.',
+        skillsCovered: ['Enterprise Security', 'Threat Vectors', 'Network Security Fabric', 'Perimeter Defense'],
+        image: 'public/images/certificates/cybersecurity (4).png',
+        credentialUrl: 'https://training.fortinet.com'
+      },
+      {
+        id: 'cert-idn-dasar',
+        title: 'Cyber Security Dasar',
+        issuer: 'ID-Networkers (IDN.ID)',
+        date: 'Jan 2026 (Valid until 29-01-2029)',
+        category: 'Cybersecurity',
+        shortDescription: 'Konsep dasar keamanan siber, proteksi jaringan komputer, dan mitigasi ancaman digital.',
+        fullDescription: 'Telah menyelesaikan kursus online Cyber Security Dasar yang diselenggarakan oleh ID-Networkers (Indonesian IT Expert Factory) melalui LMS IDN (Nomor Sertifikat: IDN-1769660279-13888-73486). Mempelajari fundamental arsitektur keamanan siber, analisis celah keamanan, proteksi endpoint, serta teknik pencegahan serangan jaringan.',
+        skillsCovered: ['Keamanan Jaringan', 'Analisis Celah Keamanan', 'ID-Networkers Standard', 'Proteksi Sistem'],
+        image: 'public/images/certificates/cybersecurity (5).png',
+        credentialUrl: 'https://lms.idn.id/cert-verification'
+      },
+      {
+        id: 'cert-cybrary-basics',
+        title: 'Cybersecurity Basics',
+        issuer: 'Cybrary',
+        date: 'Jan 24, 2026',
+        category: 'Cybersecurity',
+        shortDescription: 'Core principles of cybersecurity, threat modeling, attack vectors, and defensive controls.',
+        fullDescription: 'Completed the Continuing Education training course provided by Cybrary in Cybersecurity Basics (Cert #CC-322ae343-9571-43eb-b90a-b1db3439788c). Emphasized the CIA triad, authentication mechanisms, malware categorization, and fundamental security controls.',
+        skillsCovered: ['CIA Triad', 'Malware Types', 'Authentication Basics', 'Risk Management'],
+        image: 'public/images/certificates/cybersecurity (2).png',
+        credentialUrl: 'https://app.cybrary.it'
+      },
+      {
+        id: 'cert-upgrad-fundamentals',
+        title: 'Fundamentals of Cybersecurity',
+        issuer: 'upGrad',
+        date: '21 January, 2026',
+        category: 'Cybersecurity',
+        shortDescription: 'Structured coursework covering digital risk principles, cryptography basics, and network vulnerabilities.',
+        fullDescription: 'Certificate of Completion awarded by upGrad Education Private Limited (UID: 8HGjV3WDTZgZ4Vep) for successfully completing the Fundamentals of Cybersecurity curriculum. Covered fundamental concepts in safeguarding digital assets, network security protocols, and security hygiene.',
+        skillsCovered: ['Cybersecurity Concepts', 'Network Hygiene', 'Cryptography Basics', 'Data Security'],
+        image: 'public/images/certificates/cybersecurity (3).png',
+        credentialUrl: 'https://www.upgrad.com'
+      }
+    ];
+
+    const journeyMilestones = [
+      {
+        id: 'step-1',
+        stepNumber: 1,
+        title: 'Starting Point',
+        subtitle: 'Exploring cybersecurity fundamentals',
+        description: 'Began the learning journey by understanding core security principles, confidentiality, integrity, availability, common digital threats, and ethical hacking standards.',
+        status: 'completed',
+        keyTopics: ['CIA Triad', 'Threat Models', 'Cyber Ethics', 'Basic Terminology']
+      },
+      {
+        id: 'step-2',
+        stepNumber: 2,
+        title: 'Linux & Networking',
+        subtitle: 'Building foundational systems knowledge',
+        description: 'Focused on understanding how computers communicate and operate under the hood. Mastered essential Linux CLI navigation, file permissions, and TCP/IP protocol fundamentals.',
+        status: 'completed',
+        keyTopics: ['Bash CLI', 'Permissions & SUID', 'TCP/IP & OSI Models', 'IPv4 Subnetting']
+      },
+      {
+        id: 'step-3',
+        stepNumber: 3,
+        title: 'Security Tools',
+        subtitle: 'Hands-on practice with industry utilities',
+        description: 'Started learning and running essential network and security tools in private lab environments: Nmap for discovery, Wireshark for packet inspection, and Burp Suite for HTTP request analysis.',
+        status: 'completed',
+        keyTopics: ['Nmap Port Scanning', 'Wireshark PCAP Analysis', 'Burp Suite Proxy', 'HTTP Headers']
+      },
+      {
+        id: 'step-4',
+        stepNumber: 4,
+        title: 'CTF & Labs',
+        subtitle: 'Applying knowledge through practical exercises',
+        description: 'Engaging with beginner Capture The Flag challenges and interactive labs on platforms like TryHackMe and OverTheWire to practice structured problem-solving and enumeration.',
+        status: 'in-progress',
+        keyTopics: ['OverTheWire Bandit', 'Web Exploitation Basics', 'Privilege Enumeration', 'Lab Note Taking']
+      },
+      {
+        id: 'step-5',
+        stepNumber: 5,
+        title: 'Building Projects',
+        subtitle: 'Turning learning into practical portfolio labs',
+        description: 'Documenting network recon labs, traffic analysis findings, and vulnerability testing write-ups to reinforce technical depth and demonstrate continuous learning.',
+        status: 'in-progress',
+        keyTopics: ['Lab Reproducibility', 'Markdown Writeups', 'System Automation', 'GitHub Repositories']
+      },
+      {
+        id: 'step-6',
+        stepNumber: 6,
+        title: "What's Next",
+        subtitle: 'Continuous growth and deeper technical specialization',
+        description: 'Continuing to deepen knowledge across advanced networking, defensive monitoring, web application security, basic Python scripting for security tasks, and preparing for foundational industry certifications.',
+        status: 'upcoming',
+        keyTopics: ['Python for Security', 'Blue Team / SOC Basics', 'Web App Pentesting', 'Certifications Prep']
+      }
+    ];
+
+    // --- REUSABLE COMPONENTS ---
+    const StatusBadge = ({ status, size = 'sm' }) => {
+      let bg = 'bg-zinc-800 text-zinc-300 border-zinc-700';
+      let dot = 'bg-zinc-400';
+      let label = status;
+
+      if (status === 'FOUNDATION') {
+        bg = 'bg-cyan-950/40 text-cyan-300 border-cyan-500/30';
+        dot = 'bg-cyan-400';
+      } else if (status === 'LEARNING') {
+        bg = 'bg-amber-950/40 text-amber-300 border-amber-500/30';
+        dot = 'bg-amber-400';
+      } else if (status === 'PRACTICING' || status === 'PRACTICE') {
+        bg = 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40 shadow-glow-sm';
+        dot = 'bg-[#00ff66]';
+        label = status === 'PRACTICE' ? 'PRACTICE' : 'PRACTICING';
+      } else if (status === 'BASIC') {
+        bg = 'bg-slate-800/60 text-slate-300 border-slate-600/40';
+        dot = 'bg-slate-400';
+      } else if (status === 'COMPLETED') {
+        bg = 'bg-green-950/50 text-green-300 border-green-500/40';
+        dot = 'bg-green-400';
+      }
+
+      const padding = size === 'sm' ? 'px-2.5 py-0.5 text-xs' : 'px-3 py-1 text-xs';
+      return (
+        <span className={`inline-flex items-center gap-1.5 font-mono font-medium rounded-full border ${bg} ${padding}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${dot} animate-pulse`} />
+          <span>{label}</span>
+        </span>
+      );
+    };
+
+    const TerminalFrame = ({ title = 'zulfan@cyberlab: ~', children, copyText }) => {
+      const [copied, setCopied] = useState(false);
+      const handleCopy = () => {
+        if (!copyText) return;
+        navigator.clipboard.writeText(copyText);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      };
+
+      return (
+        <div className="rounded-xl overflow-hidden border border-emerald-500/20 bg-[#0c120f]/90 shadow-2xl backdrop-blur-md transition-all duration-300 hover:border-emerald-500/35 hover:shadow-glow-sm">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-[#090d0b] border-b border-emerald-500/15 select-none">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-rose-500/70 border border-rose-600/50" />
+              <div className="w-3 h-3 rounded-full bg-amber-500/70 border border-amber-600/50" />
+              <div className="w-3 h-3 rounded-full bg-emerald-500/70 border border-emerald-600/50" />
+              <span className="ml-2 text-xs font-mono text-emerald-400/80 font-medium">
+                {title}
+              </span>
+            </div>
+            {copyText && (
+              <button
+                onClick={handleCopy}
+                className="text-xs font-mono text-zinc-400 hover:text-[#00ff66] transition-colors px-2 py-0.5 rounded hover:bg-emerald-950/40"
+              >
+                {copied ? '✓ copied' : '⧉ copy'}
+              </button>
+            )}
+          </div>
+          <div className="p-4 sm:p-5 font-mono text-sm leading-relaxed text-zinc-300">
+            {children}
+          </div>
+        </div>
+      );
+    };
+
+    const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-4xl' }) => {
+      useEffect(() => {
+        const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+        if (isOpen) {
+          document.body.style.overflow = 'hidden';
+          window.addEventListener('keydown', onKey);
+        } else {
+          document.body.style.overflow = 'unset';
+        }
+        return () => {
+          document.body.style.overflow = 'unset';
+          window.removeEventListener('keydown', onKey);
+        };
+      }, [isOpen]);
+
+      if (!isOpen) return null;
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/85 backdrop-blur-md" onClick={onClose}>
+          <div className={`relative w-full ${maxWidth} max-h-[92vh] overflow-y-auto rounded-2xl border border-emerald-500/30 bg-[#0c1310] p-5 sm:p-7 shadow-2xl`} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between pb-4 mb-5 border-b border-emerald-500/15">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#00ff66] shadow-glow-sm" />
+                <h3 className="text-lg font-mono font-semibold text-zinc-100 tracking-tight">{title}</h3>
+              </div>
+              <button onClick={onClose} className="p-1.5 text-zinc-400 hover:text-white rounded-lg border border-transparent hover:border-emerald-500/30 hover:bg-emerald-950/30">
+                ✕
+              </button>
+            </div>
+            <div>{children}</div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- BACKGROUND EFFECTS: MOUSE GLOW & INTERACTIVE GRID ---
+    const BackgroundEffects = () => {
+      const [isDesktop, setIsDesktop] = useState(false);
+      const glowRef = useRef(null);
+      const gridSpotlightRef = useRef(null);
+      const targetPos = useRef({ x: -1000, y: -1000 });
+      const currentPos = useRef({ x: -1000, y: -1000 });
+      const isVisible = useRef(false);
+      const animFrameId = useRef(null);
+
+      useEffect(() => {
+        const mediaQuery = window.matchMedia('(pointer: fine)');
+        setIsDesktop(mediaQuery.matches);
+
+        const handleMediaChange = (e) => setIsDesktop(e.matches);
+        mediaQuery.addEventListener('change', handleMediaChange);
+
+        if (!mediaQuery.matches) {
+          return () => mediaQuery.removeEventListener('change', handleMediaChange);
+        }
+
+        targetPos.current = { x: window.innerWidth / 2, y: window.innerHeight / 3 };
+        currentPos.current = { x: window.innerWidth / 2, y: window.innerHeight / 3 };
+
+        const onMouseMove = (e) => {
+          targetPos.current = { x: e.clientX, y: e.clientY };
+          if (!isVisible.current) {
+            isVisible.current = true;
+            if (glowRef.current) glowRef.current.style.opacity = '1';
+            if (gridSpotlightRef.current) gridSpotlightRef.current.style.opacity = '1';
+          }
+        };
+
+        const onMouseLeave = () => {
+          isVisible.current = false;
+          if (glowRef.current) glowRef.current.style.opacity = '0.35';
+          if (gridSpotlightRef.current) gridSpotlightRef.current.style.opacity = '0.2';
+        };
+
+        const onMouseEnter = () => {
+          isVisible.current = true;
+          if (glowRef.current) glowRef.current.style.opacity = '1';
+          if (gridSpotlightRef.current) gridSpotlightRef.current.style.opacity = '1';
+        };
+
+        window.addEventListener('mousemove', onMouseMove, { passive: true });
+        document.addEventListener('mouseleave', onMouseLeave);
+        document.addEventListener('mouseenter', onMouseEnter);
+
+        const render = () => {
+          const ease = 0.12;
+          currentPos.current.x += (targetPos.current.x - currentPos.current.x) * ease;
+          currentPos.current.y += (targetPos.current.y - currentPos.current.y) * ease;
+
+          const x = Math.round(currentPos.current.x);
+          const y = Math.round(currentPos.current.y);
+
+          if (glowRef.current) {
+            glowRef.current.style.transform = `translate3d(${x - 350}px, ${y - 350}px, 0)`;
+          }
+
+          if (gridSpotlightRef.current) {
+            const maskValue = `radial-gradient(450px circle at ${x}px ${y}px, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 70%)`;
+            gridSpotlightRef.current.style.maskImage = maskValue;
+            gridSpotlightRef.current.style.webkitMaskImage = maskValue;
+          }
+
+          animFrameId.current = requestAnimationFrame(render);
+        };
+
+        animFrameId.current = requestAnimationFrame(render);
+
+        return () => {
+          window.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseleave', onMouseLeave);
+          document.removeEventListener('mouseenter', onMouseEnter);
+          mediaQuery.removeEventListener('change', handleMediaChange);
+          if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
+        };
+      }, []);
+
+      return (
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+          <div
+            className="absolute inset-0 cyber-grid opacity-70"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)
+              `,
+              backgroundSize: '36px 36px'
+            }}
+          />
+          {isDesktop && (
+            <div
+              ref={gridSpotlightRef}
+              className="absolute inset-0 transition-opacity duration-700 ease-out opacity-0"
+              style={{
+                backgroundImage: `
+                  linear-gradient(to right, rgba(0, 255, 102, 0.09) 1px, transparent 1px),
+                  linear-gradient(to bottom, rgba(0, 255, 102, 0.09) 1px, transparent 1px)
+                `,
+                backgroundSize: '36px 36px'
+              }}
+            />
+          )}
+          {isDesktop && (
+            <div
+              ref={glowRef}
+              className="absolute top-0 left-0 w-[700px] h-[700px] rounded-full transition-opacity duration-700 ease-out opacity-0"
+              style={{
+                background: 'radial-gradient(circle, rgba(0, 255, 102, 0.075) 0%, rgba(16, 185, 129, 0.035) 40%, rgba(8, 12, 10, 0) 70%)',
+                filter: 'blur(45px)',
+                willChange: 'transform',
+                transform: 'translate3d(-1000px, -1000px, 0)'
+              }}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // --- MAIN APP ---
+    function App() {
+      const [selectedProject, setSelectedProject] = useState(null);
+      const [selectedCert, setSelectedCert] = useState(null);
+      const [certCategory, setCertCategory] = useState('All');
+      const [copiedEmail, setCopiedEmail] = useState(false);
+      const [mobileMenu, setMobileMenu] = useState(false);
+
+      const navLinks = ['HOME', 'ABOUT', 'SKILLS', 'PROJECTS', 'CERTIFICATES', 'JOURNEY', 'CONTACT'];
+
+      const scrollTo = (id) => {
+        setMobileMenu(false);
+        const el = document.getElementById(id.toLowerCase());
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      const handleCopyEmail = () => {
+        navigator.clipboard.writeText(profileData.socials.email);
+        setCopiedEmail(true);
+        setTimeout(() => setCopiedEmail(false), 2000);
+      };
+
+      const filteredCerts = certificatesData.filter(c => certCategory === 'All' || c.category === certCategory);
+
+      return (
+        <div className="relative min-h-screen bg-[#070a09] text-[#e2e8f0] cyber-grid overflow-x-hidden selection:bg-emerald-500/20 selection:text-[#00ff66]">
+          {/* Background Effects: Mouse-following green glow + interactive subtle grid */}
+          <BackgroundEffects />
+
+          <div className="cyber-radial-glow fixed inset-0 pointer-events-none z-0" />
+
+          {/* NAVBAR */}
+          <header className="fixed top-0 left-0 right-0 z-40 bg-[#070b09]/90 backdrop-blur-md border-b border-emerald-500/20 py-3">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+              <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollTo('home')}>
+                <div className="w-8 h-8 rounded-lg bg-[#0e1713] border border-emerald-500/40 flex items-center justify-center text-[#00ff66] font-mono text-sm font-bold shadow-glow-sm">
+                  &gt;_
+                </div>
+                <div>
+                  <span className="font-mono text-sm font-bold text-zinc-100 tracking-wider">ZULFAN JAULA </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-500/30">STUDENT</span>
+                </div>
+              </div>
+
+              {/* Desktop links */}
+              <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+                {navLinks.map((name) => (
+                  <button
+                    key={name}
+                    onClick={() => scrollTo(name)}
+                    className="px-3 py-1.5 font-mono text-xs tracking-wider text-zinc-400 hover:text-white hover:bg-emerald-950/20 rounded-md transition-colors"
+                  >
+                    {name}
+                  </button>
+                ))}
+              </nav>
+
+              <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-[#0d1512] border border-emerald-500/25 text-xs font-mono text-zinc-300">
+                <span className="w-2 h-2 rounded-full bg-[#00ff66] animate-pulse" />
+                <span className="text-zinc-400">status:</span>
+                <span className="text-emerald-400 font-medium">learning</span>
+              </div>
+
+              {/* Mobile menu button */}
+              <button onClick={() => setMobileMenu(!mobileMenu)} className="md:hidden p-2 rounded border border-emerald-500/20 text-zinc-300">
+                ☰
+              </button>
+            </div>
+
+            {/* Mobile Dropdown */}
+            {mobileMenu && (
+              <div className="md:hidden px-4 pt-2 pb-4 bg-[#080d0b] border-t border-emerald-500/20 mt-2 space-y-1">
+                {navLinks.map((name) => (
+                  <button
+                    key={name}
+                    onClick={() => scrollTo(name)}
+                    className="block w-full text-left px-3 py-2 font-mono text-xs text-zinc-300 hover:text-[#00ff66]"
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </header>
+
+          <main className="relative z-10 pt-28 pb-16">
+            
+            {/* HERO SECTION */}
+            <section id="home" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                <div className="lg:col-span-7 space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-[#0a120e] border border-emerald-500/30 text-xs font-mono text-emerald-400">
+                    <span className="w-2 h-2 rounded-full bg-[#00ff66] animate-pulse" />
+                    <span>{profileData.systemStatus}</span>
+                  </div>
+
+                  <div>
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight">
+                      {profileData.name}
+                    </h1>
+                    <div className="text-emerald-400 font-mono text-sm tracking-wider uppercase mt-1">
+                      Cybersecurity Student
+                    </div>
+                    <p className="mt-3 text-lg sm:text-xl font-medium text-emerald-300/90 font-sans">
+                      {profileData.supportingHeadline}
+                    </p>
+                  </div>
+
+                  <p className="text-zinc-300 text-sm sm:text-base leading-relaxed max-w-2xl font-sans">
+                    {profileData.brandingParagraph}
+                  </p>
+
+                  <div className="flex flex-wrap gap-4 pt-2">
+                    <button
+                      onClick={() => scrollTo('projects')}
+                      className="px-5 py-2.5 rounded-lg font-mono text-sm font-semibold bg-emerald-500 hover:bg-[#00ff66] text-[#06100b] shadow-glow-sm hover:shadow-glow-neon transition-all"
+                    >
+                      View My Work →
+                    </button>
+                    <button
+                      onClick={() => scrollTo('certificates')}
+                      className="px-5 py-2.5 rounded-lg font-mono text-sm font-semibold bg-[#101b16] hover:bg-[#14241d] text-emerald-300 border border-emerald-500/30 hover:border-emerald-500/60 transition-all"
+                    >
+                      View Certificates ({certificatesData.length}) 🏅
+                    </button>
+                  </div>
+
+                  <div className="pt-3 border-t border-emerald-500/15 flex items-center gap-2 text-xs font-mono text-zinc-400">
+                    <span className="w-2 h-2 rounded-full bg-[#00ff66]" />
+                    <span className="font-semibold text-zinc-300">CURRENTLY LEARNING:</span>
+                    <span className="text-emerald-400">{profileData.currentlyLearning}</span>
+                  </div>
+                </div>
+
+                {/* Profile Image Viewport with Zulfan's uploaded profile.PNG */}
+                <div className="lg:col-span-5 flex justify-center">
+                  <div className="relative w-full max-w-[340px] rounded-2xl border border-emerald-500/35 bg-[#0d1612] p-4 shadow-2xl">
+                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-emerald-500/15 font-mono text-[11px] text-zinc-400">
+                      <span className="text-emerald-400 font-medium">🛡️ LAB IDENTITY</span>
+                      <span className="text-zinc-400 font-bold">{profileData.name}</span>
+                    </div>
+
+                    <div className="aspect-[3/4] w-full rounded-xl overflow-hidden border border-emerald-500/30 bg-[#080d0b] flex items-center justify-center">
+                      <img
+                        src="public/images/profile.PNG"
+                        alt="Zulfan Jaula Profile"
+                        className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
+                        onError={(e) => { e.target.src = 'public/images/profile.svg'; }}
+                      />
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-emerald-500/15 flex items-center justify-between font-mono text-xs">
+                      <span className="text-white font-semibold">● Zulfan Jaula</span>
+                      <span className="text-emerald-400 text-[11px]">Linux • Labs • Tools</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* HERO TERMINAL */}
+              <div className="mt-12">
+                <TerminalFrame title="zulfan@cyberlab: ~/portfolio" copyText={`whoami\nZulfan Jaula — Cybersecurity Student\n\nskills\nLinux\nNetworking\nNmap\nWireshark\nBurp Suite\nWeb Security\nCTF\nPython\n\nstatus\nlearning...`}>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-emerald-500/80">┌──[<span className="text-emerald-300 font-medium">zulfan@cyberlab</span>]─[<span className="text-zinc-400">~/portfolio</span>]</div>
+                      <div className="text-zinc-300 flex items-center gap-2 mt-0.5">
+                        <span className="text-emerald-500">└─$</span>
+                        <span className="text-white font-semibold">whoami</span>
+                      </div>
+                      <div className="mt-1.5 pl-4 text-emerald-400 font-medium flex items-center gap-2">
+                        <span className="text-white font-bold">{profileData.name}</span>
+                        <span className="text-zinc-500">—</span>
+                        <span>Cybersecurity Student</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-zinc-300 flex items-center gap-2">
+                        <span className="text-emerald-500">└─$</span>
+                        <span className="text-white font-semibold">skills</span>
+                      </div>
+                      <div className="mt-2 pl-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-zinc-300 text-xs">
+                        <span>▸ Linux</span>
+                        <span>▸ Networking</span>
+                        <span>▸ Nmap</span>
+                        <span>▸ Wireshark</span>
+                        <span>▸ Burp Suite</span>
+                        <span>▸ Web Security</span>
+                        <span>▸ CTF</span>
+                        <span>▸ Python</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-zinc-300 flex items-center gap-2">
+                        <span className="text-emerald-500">└─$</span>
+                        <span className="text-white font-semibold">status</span>
+                      </div>
+                      <div className="mt-1.5 pl-4 flex items-center gap-2 text-emerald-400">
+                        <span>learning...</span>
+                        <span className="terminal-cursor" />
+                      </div>
+                    </div>
+                  </div>
+                </TerminalFrame>
+              </div>
+            </section>
+
+            {/* ABOUT SECTION */}
+            <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center mb-12">
+                <div className="inline-block px-3 py-1 rounded-full bg-[#0e1713] border border-emerald-500/25 text-xs font-mono text-emerald-400 mb-2">
+                  01 // PROFILE
+                </div>
+                <h2 className="text-3xl font-bold text-white">About Me</h2>
+                <div className="w-12 h-1 bg-emerald-500 rounded-full mx-auto mt-3 opacity-60" />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="lg:col-span-7 rounded-xl border border-emerald-500/20 bg-[#0e1613]/80 p-6 space-y-4">
+                  <h3 className="text-lg font-bold text-zinc-100">Student Philosophy &amp; Journey</h3>
+                  <p className="text-zinc-300 text-sm leading-relaxed">{profileData.aboutIntro}</p>
+                  <p className="text-zinc-300 text-sm leading-relaxed">
+                    My goal is authentic growth: setting up virtual machine environments, dissecting network packets, learning Bash utilities, and solving Capture The Flag challenges that demand systematic troubleshooting.
+                  </p>
+                  <div className="pt-4 border-t border-emerald-500/15 grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs text-zinc-300">
+                    <div>▸ Linux First</div>
+                    <div>▸ Networking</div>
+                    <div>▸ Hands-on Labs</div>
+                    <div>▸ Ethics &amp; Defense</div>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-5">
+                  <TerminalFrame title="zulfan@cyberlab: ~" copyText="Curious.\nLearning.\nPracticing.\nBuilding.\nImproving.">
+                    <div className="space-y-3 font-mono text-xs sm:text-sm">
+                      <div className="text-zinc-400">
+                        <span className="text-emerald-400">zulfan@cyberlab</span>:<span className="text-cyan-400">~</span>$ cat about.txt
+                      </div>
+                      <div className="pl-2 space-y-1.5 border-l border-emerald-500/30 ml-1">
+                        {profileData.aboutTerminal.map((line, idx) => (
+                          <div key={idx} className="text-emerald-300 font-medium">› {line}</div>
+                        ))}
+                      </div>
+                      <div className="pt-3 border-t border-emerald-500/15 text-[11px] text-zinc-500">
+                        FILE: about.txt [RO] | ENCODING: UTF-8
+                      </div>
+                    </div>
+                  </TerminalFrame>
+                </div>
+              </div>
+            </section>
+
+            {/* SKILLS SECTION */}
+            <section id="skills" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center mb-12">
+                <div className="inline-block px-3 py-1 rounded-full bg-[#0e1713] border border-emerald-500/25 text-xs font-mono text-emerald-400 mb-2">
+                  02 // TECHNICAL ABILITIES
+                </div>
+                <h2 className="text-3xl font-bold text-white">Skills &amp; Technologies</h2>
+                <div className="w-12 h-1 bg-emerald-500 rounded-full mx-auto mt-3 opacity-60" />
+                <p className="mt-3 text-xs sm:text-sm font-mono text-zinc-400">
+                  Honest learning status indicators representing ongoing practical study and lab application. No inflated percentages.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                {skillsData.map((skill) => (
+                  <div key={skill.id} className="rounded-xl border border-emerald-500/15 bg-[#0e1613]/80 p-5 flex flex-col justify-between hover:border-emerald-500/40 hover:-translate-y-1 transition-all">
+                    <div>
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <span className="font-mono text-emerald-400 font-bold text-sm">[{skill.name.substring(0, 3).toUpperCase()}]</span>
+                        <StatusBadge status={skill.level} size="sm" />
+                      </div>
+                      <h3 className="text-lg font-bold text-zinc-100">{skill.name}</h3>
+                      <p className="mt-2 text-xs text-zinc-300 leading-relaxed font-sans">{skill.description}</p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-emerald-500/10 text-[11px] font-mono text-zinc-400">
+                      <span className="text-emerald-400">▸ focus:</span> {skill.focus}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* PROJECTS SECTION */}
+            <section id="projects" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center mb-12">
+                <div className="inline-block px-3 py-1 rounded-full bg-[#0e1713] border border-emerald-500/25 text-xs font-mono text-emerald-400 mb-2">
+                  03 // HANDS-ON LABS
+                </div>
+                <h2 className="text-3xl font-bold text-white">Projects &amp; Labs</h2>
+                <div className="w-12 h-1 bg-emerald-500 rounded-full mx-auto mt-3 opacity-60" />
+                <p className="mt-3 text-xs sm:text-sm font-mono text-zinc-400">
+                  Educational labs and technical practice environments. Click any card to inspect objectives and commands.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {projectsData.map((project) => (
+                  <div
+                    key={project.id}
+                    onClick={() => setSelectedProject(project)}
+                    className="rounded-xl border border-emerald-500/20 bg-[#0e1613] p-6 cursor-pointer hover:border-emerald-500/50 hover:shadow-glow-sm hover:-translate-y-1 transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-3 mb-3">
+                        <span className="text-xs font-mono text-emerald-400 font-semibold">{project.category}</span>
+                        <StatusBadge status={project.status} size="sm" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white flex items-center justify-between">
+                        <span>{project.name}</span>
+                        <span className="text-xs font-mono text-emerald-400">↗</span>
+                      </h3>
+                      <p className="mt-3 text-sm text-zinc-300 leading-relaxed font-sans">{project.description}</p>
+                      
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {project.tools.map((t, idx) => (
+                          <span key={idx} className="px-2.5 py-1 rounded bg-[#0b1310] border border-emerald-500/25 text-xs font-mono text-emerald-300">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-3 border-t border-emerald-500/15 flex items-center justify-between text-xs font-mono text-zinc-400">
+                      <span>View Lab Details &amp; Objectives</span>
+                      <span className="text-emerald-400 font-bold">&gt;&gt;</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* CERTIFICATES GALLERY WITH REAL CERTIFICATES */}
+            <section id="certificates" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center mb-10">
+                <div className="inline-block px-3 py-1 rounded-full bg-[#0e1713] border border-emerald-500/25 text-xs font-mono text-emerald-400 mb-2">
+                  04 // REAL CREDENTIALS &amp; COURSEWORK ({certificatesData.length})
+                </div>
+                <h2 className="text-3xl font-bold text-white">Certificates &amp; Learning</h2>
+                <div className="w-12 h-1 bg-emerald-500 rounded-full mx-auto mt-3 opacity-60" />
+                <p className="mt-3 text-xs sm:text-sm font-mono text-zinc-400">
+                  Validated coursework from Hackviser, Cisco Networking Academy, Cybrary, Fortinet, ID-Networkers, and upGrad. Click any certificate to open full image lightbox.
+                </p>
+              </div>
+
+              {/* Category Filter */}
+              <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+                {['All', 'Cybersecurity', 'Linux'].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setCertCategory(cat)}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                      certCategory === cat
+                        ? 'bg-emerald-950 text-[#00ff66] border border-emerald-500/50 shadow-glow-sm font-semibold'
+                        : 'bg-[#0a110e] text-zinc-400 border border-emerald-500/15 hover:text-zinc-200'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Gallery Grid (3 cols desktop, 2 cols tablet, 1 col mobile) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCerts.map((cert) => (
+                  <div
+                    key={cert.id}
+                    onClick={() => setSelectedCert(cert)}
+                    className="rounded-xl border border-emerald-500/25 bg-[#0d1512] overflow-hidden cursor-pointer hover:border-emerald-500/60 hover:shadow-glow-sm hover:-translate-y-1.5 transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      {/* Image Thumbnail with object-contain */}
+                      <div className="aspect-[4/3] w-full bg-[#070b09] p-2.5 flex items-center justify-center border-b border-emerald-500/15 relative">
+                        <img
+                          src={cert.image}
+                          alt={cert.title}
+                          className="max-h-full max-w-full object-contain rounded transition-transform duration-300 hover:scale-105"
+                          loading="lazy"
+                        />
+                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-[#09110e]/90 border border-emerald-500/30 text-[10px] font-mono text-emerald-300">
+                          {cert.issuer}
+                        </div>
+                      </div>
+
+                      <div className="p-5">
+                        <h3 className="text-base sm:text-lg font-bold text-white line-clamp-2">{cert.title}</h3>
+                        <div className="mt-2 space-y-1 font-mono text-xs text-zinc-400">
+                          <div>Issuer: <span className="text-emerald-300 font-semibold">{cert.issuer}</span></div>
+                          <div>Date: <span className="text-zinc-300">{cert.date}</span></div>
+                        </div>
+                        <p className="mt-3 text-xs sm:text-sm text-zinc-300/80 line-clamp-2 font-sans leading-relaxed">{cert.shortDescription}</p>
+                      </div>
+                    </div>
+
+                    <div className="px-5 pb-5 pt-1">
+                      <button className="w-full py-2 rounded-lg font-mono text-xs bg-[#111e18] hover:bg-[#15271f] text-emerald-300 border border-emerald-500/30 flex items-center justify-center gap-1.5">
+                        <span>Inspect Certificate</span> 🔍
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* JOURNEY TIMELINE */}
+            <section id="journey" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center mb-14">
+                <div className="inline-block px-3 py-1 rounded-full bg-[#0e1713] border border-emerald-500/25 text-xs font-mono text-emerald-400 mb-2">
+                  05 // PROGRESSION &amp; PATH
+                </div>
+                <h2 className="text-3xl font-bold text-white">My Cybersecurity Journey</h2>
+                <div className="w-12 h-1 bg-emerald-500 rounded-full mx-auto mt-3 opacity-60" />
+              </div>
+
+              <div className="relative">
+                <div className="absolute top-4 bottom-4 left-4 sm:left-1/2 sm:-translate-x-1/2 w-0.5 bg-gradient-to-b from-emerald-500 via-emerald-500/40 to-teal-500/20" />
+
+                <div className="space-y-10">
+                  {journeyMilestones.map((step, idx) => {
+                    const isEven = idx % 2 === 0;
+                    return (
+                      <div key={step.id} className={`relative flex flex-col sm:flex-row items-start ${isEven ? 'sm:flex-row-reverse' : ''} gap-6 sm:gap-0`}>
+                        <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 top-1 z-20 w-8 h-8 rounded-full bg-[#09110d] border-2 border-[#00ff66] flex items-center justify-center text-[#00ff66] font-mono text-xs font-bold shadow-glow-sm">
+                          {step.stepNumber}
+                        </div>
+                        <div className="hidden sm:block sm:w-1/2" />
+                        <div className={`w-full sm:w-1/2 pl-12 sm:pl-0 ${isEven ? 'sm:pr-10' : 'sm:pl-10'}`}>
+                          <div className="rounded-xl border border-emerald-500/20 bg-[#0d1612] p-5">
+                            <div className="flex items-center justify-between text-xs font-mono text-emerald-400 mb-1">
+                              <span>PHASE 0{step.stepNumber}</span>
+                              <span className="text-[11px] text-zinc-400">{step.status}</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-white">{step.title}</h3>
+                            <h4 className="text-xs font-mono text-zinc-400 mt-0.5">{step.subtitle}</h4>
+                            <p className="mt-3 text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">{step.description}</p>
+                            <div className="mt-3 pt-2 border-t border-emerald-500/10 flex flex-wrap gap-1">
+                              {step.keyTopics.map((t, tIdx) => (
+                                <span key={tIdx} className="px-2 py-0.5 rounded bg-[#09110d] border border-emerald-500/20 text-[10px] font-mono text-emerald-400">
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+
+            {/* TERMINAL SHOWCASE */}
+            <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+              <div className="text-center mb-6">
+                <div className="inline-block px-3 py-1 rounded-full bg-[#0e1713] border border-emerald-500/25 text-xs font-mono text-emerald-400 mb-2">
+                  06 // LEARNING DIRECTIVE
+                </div>
+                <h3 className="text-xl font-bold text-white">Terminal Directive</h3>
+              </div>
+
+              <TerminalFrame title="zulfan@cyberlab" copyText="cat goals.txt\n> Learn cybersecurity\n> Strengthen networking fundamentals\n> Improve Linux skills\n> Practice web security\n> Complete CTF challenges\n> Build practical projects\n> Keep learning">
+                <div className="space-y-4">
+                  <div className="text-zinc-400">
+                    <span className="text-emerald-400 font-semibold">zulfan@cyberlab</span>:<span className="text-cyan-400">~</span>$ cat goals.txt
+                  </div>
+                  <div className="space-y-2 pl-3 text-zinc-200">
+                    {profileData.goalsTerminal.map((g, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <span className="text-[#00ff66] font-bold">&gt;</span>
+                        <span className="text-emerald-300 font-medium">{g}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="pt-2 text-zinc-400 flex items-center">
+                    <span className="text-emerald-400 font-semibold">zulfan@cyberlab</span>:<span className="text-cyan-400">~</span>$ <span className="terminal-cursor" />
+                  </div>
+                </div>
+              </TerminalFrame>
+            </section>
+
+            {/* PHILOSOPHY CALLOUT */}
+            <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+              <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-[#0e1713] via-[#09110d] to-[#070b09] p-8 sm:p-12 text-center space-y-4 shadow-glow-sm">
+                <h3 className="text-2xl sm:text-3xl font-bold text-white">{profileData.philosophyTitle}</h3>
+                <p className="text-base sm:text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
+                  &ldquo;{profileData.philosophyText}&rdquo;
+                </p>
+                <div className="text-xs font-mono text-emerald-400 pt-2">
+                  ● DEDICATED TO HONEST PROGRESSION &amp; PRACTICAL MASTERY
+                </div>
+              </div>
+            </section>
+
+            {/* CONTACT SECTION WITH USER LINKS */}
+            <section id="contact" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center mb-12">
+                <div className="inline-block px-3 py-1 rounded-full bg-[#0e1713] border border-emerald-500/25 text-xs font-mono text-emerald-400 mb-2">
+                  07 // TRANSMISSION &amp; NETWORK
+                </div>
+                <h2 className="text-3xl font-bold text-white">Let&apos;s Connect</h2>
+                <div className="w-12 h-1 bg-emerald-500 rounded-full mx-auto mt-3 opacity-60" />
+                <p className="mt-3 text-sm text-zinc-300 max-w-xl mx-auto">{profileData.contactIntro}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* GitHub */}
+                <div className="rounded-xl border border-emerald-500/20 bg-[#0e1613] p-6 flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-lg font-bold text-white">GitHub</h4>
+                    <p className="mt-2 text-xs text-zinc-400">Lab repositories, notes, scripts, and documentation.</p>
+                    <div className="mt-3 text-xs font-mono text-emerald-400 truncate">github.com/zulfanjoula</div>
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-emerald-500/15">
+                    <a href={profileData.socials.github} target="_blank" rel="noopener noreferrer" className="block text-center py-2 rounded-lg font-mono text-xs bg-[#101b16] text-emerald-300 border border-emerald-500/30 hover:bg-[#14241d]">
+                      Visit GitHub ↗
+                    </a>
+                  </div>
+                </div>
+
+                {/* LinkedIn */}
+                <div className="rounded-xl border border-emerald-500/20 bg-[#0e1613] p-6 flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-lg font-bold text-white">LinkedIn</h4>
+                    <p className="mt-2 text-xs text-zinc-400">Connect professionally and follow learning milestones.</p>
+                    <div className="mt-3 text-xs font-mono text-emerald-400 truncate">zulfan-joula-62b16a386</div>
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-emerald-500/15">
+                    <a href={profileData.socials.linkedin} target="_blank" rel="noopener noreferrer" className="block text-center py-2 rounded-lg font-mono text-xs bg-[#101b16] text-emerald-300 border border-emerald-500/30 hover:bg-[#14241d]">
+                      Connect on LinkedIn ↗
+                    </a>
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div className="rounded-xl border border-emerald-500/20 bg-[#0e1613] p-6 flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-lg font-bold text-white">Email</h4>
+                    <p className="mt-2 text-xs text-zinc-400">Direct message for discussions, study groups, or inquiries.</p>
+                    <div className="mt-3 text-xs font-mono text-emerald-400 truncate">{profileData.socials.email}</div>
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-emerald-500/15 flex gap-2">
+                    <a href={`mailto:${profileData.socials.email}`} className="flex-1 text-center py-2 rounded-lg font-mono text-xs bg-[#101b16] text-emerald-300 border border-emerald-500/30 hover:bg-[#14241d]">
+                      Send Email ✉
+                    </a>
+                    <button onClick={handleCopyEmail} className="px-3 py-2 rounded-lg bg-[#0e1713] border border-emerald-500/30 text-xs font-mono text-emerald-300">
+                      {copiedEmail ? '✓' : '⧉'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </main>
+
+          {/* FOOTER */}
+          <footer className="border-t border-emerald-500/15 bg-[#050807] py-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="text-center md:text-left font-mono">
+                <div className="text-white font-bold text-sm">ZULFAN JAULA</div>
+                <div className="text-xs text-emerald-400">Cybersecurity Student • Learning • Practicing • Building</div>
+              </div>
+              <div className="font-mono text-xs text-center md:text-right space-y-1">
+                <div className="px-3 py-1 rounded bg-[#0b1310] border border-emerald-500/20 text-[#00ff66]">
+                  &gt; connection closed successfully.
+                </div>
+                <div className="text-[11px] text-zinc-500">&copy; 2026 Zulfan Jaula. All educational rights reserved.</div>
+              </div>
+            </div>
+          </footer>
+
+          {/* PROJECT DETAILS MODAL */}
+          <Modal
+            isOpen={!!selectedProject}
+            onClose={() => setSelectedProject(null)}
+            title={`LAB DETAILS // ${selectedProject?.category}`}
+          >
+            {selectedProject && (
+              <div className="space-y-5">
+                <div className="flex justify-between items-center pb-3 border-b border-emerald-500/15">
+                  <h4 className="text-xl font-bold text-white">{selectedProject.name}</h4>
+                  <StatusBadge status={selectedProject.status} size="md" />
+                </div>
+                <p className="text-zinc-300 text-sm">{selectedProject.description}</p>
+                <div>
+                  <div className="text-xs font-mono text-emerald-400 font-semibold mb-2">LEARNING OBJECTIVES:</div>
+                  <ul className="space-y-1.5 text-sm text-zinc-300">
+                    {selectedProject.objectives.map((o, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-emerald-400">▸</span> <span>{o}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="text-xs font-mono text-amber-400 font-semibold mb-2">KEY TAKEAWAYS:</div>
+                  <ul className="space-y-1.5 text-sm text-zinc-300">
+                    {selectedProject.keyTakeaways.map((k, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-amber-400">✓</span> <span>{k}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="text-xs font-mono text-zinc-400 font-semibold mb-2">KEY SYNTAX PRACTICED:</div>
+                  <div className="bg-[#080d0b] border border-emerald-500/20 rounded p-3 font-mono text-xs text-emerald-300 space-y-1">
+                    {selectedProject.commandsPracticed.map((c, idx) => (
+                      <div key={idx}>$ {c}</div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </Modal>
+
+          {/* CERTIFICATE LIGHTBOX MODAL WITH REAL CERTIFICATE IMAGE */}
+          <Modal
+            isOpen={!!selectedCert}
+            onClose={() => setSelectedCert(null)}
+            title="CERTIFICATE VERIFICATION & DETAILS"
+            maxWidth="max-w-5xl"
+          >
+            {selectedCert && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div className="lg:col-span-7">
+                  <div className="aspect-[4/3] w-full rounded-xl overflow-hidden border border-emerald-500/25 bg-[#080d0b] flex items-center justify-center p-3">
+                    <img
+                      src={selectedCert.image}
+                      alt={selectedCert.title}
+                      className="max-h-full max-w-full object-contain rounded"
+                    />
+                  </div>
+                  <div className="mt-2 text-xs font-mono text-zinc-500 text-center">
+                    FILE: {selectedCert.image}
+                  </div>
+                </div>
+
+                <div className="lg:col-span-5 space-y-4">
+                  <div>
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-[#00ff66] border border-emerald-500/30">
+                      CERTIFICATE
+                    </span>
+                    <h4 className="text-xl font-bold text-white mt-2">{selectedCert.title}</h4>
+                  </div>
+
+                  <div className="p-3 rounded-lg bg-[#090f0c] border border-emerald-500/15 font-mono text-xs space-y-1 text-zinc-300">
+                    <div>Issued by: <span className="text-emerald-300 font-semibold">{selectedCert.issuer}</span></div>
+                    <div>Date: <span className="text-white">{selectedCert.date}</span></div>
+                  </div>
+
+                  <div>
+                    <div className="text-xs font-mono font-semibold uppercase text-emerald-400 mb-1">About This Certificate:</div>
+                    <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed bg-[#0a110e] p-3 rounded border border-emerald-500/10">
+                      {selectedCert.fullDescription}
+                    </p>
+                  </div>
+
+                  <div>
+                    <div className="text-xs font-mono font-semibold uppercase text-zinc-400 mb-1.5">Key Topics Covered:</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedCert.skillsCovered.map((s, idx) => (
+                        <span key={idx} className="px-2 py-0.5 rounded bg-[#0f1915] border border-emerald-500/20 text-xs font-mono text-emerald-300">
+                          ✓ {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {selectedCert.credentialUrl && (
+                    <div className="pt-2">
+                      <a
+                        href={selectedCert.credentialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full py-2.5 text-center rounded-lg font-mono text-xs font-semibold bg-emerald-500 hover:bg-[#00ff66] text-[#06100b] transition-all"
+                      >
+                        Verify Certificate ↗
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </Modal>
+
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
